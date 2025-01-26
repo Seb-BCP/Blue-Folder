@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Folder - Labour Hire Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Blue Folder System</h1>
+        <nav>
+            <ul>
+                <li><a href="#summary">Weekly Summary</a></li>
+                <li><a href="#timesheets">Timesheets</a></li>
+                <li><a href="#paysheets">Pay Sheets</a></li>
+                <li><a href="#charges">Client Charges</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Weekly Summary Section -->
+        <section id="summary">
+            <h2>Weekly Summary</h2>
+            <table id="summary-table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Site</th>
+                        <th>Worker</th>
+                        <th>Classification</th>
+                        <th>Total Hours</th>
+                    </tr>
+                </thead>
+                <tbody id="summary-body">
+                    <!-- Summary rows will be added by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Timesheets Section -->
+        <section id="timesheets">
+            <h2>Timesheets</h2>
+            <table id="timesheet-table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Site</th>
+                        <th>Worker</th>
+                        <th>Classification</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                        <th>Sun</th>
+                        <th>Normal</th>
+                        <th>T&H</th>
+                        <th>Double</th>
+                    </tr>
+                </thead>
+                <tbody id="timesheet-body">
+                    <!-- Timesheet rows will be added by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Pay Sheets Section -->
+        <section id="paysheets">
+            <h2>Pay Sheets</h2>
+            <table id="paysheet-table">
+                <thead>
+                    <tr>
+                        <th>Worker</th>
+                        <th>Classification</th>
+                        <th>Normal Hours</th>
+                        <th>Normal Rate</th>
+                        <th>Normal Pay</th>
+                        <th>T&H Hours</th>
+                        <th>T&H Rate</th>
+                        <th>T&H Pay</th>
+                        <th>Double Hours</th>
+                        <th>Double Rate</th>
+                        <th>Double Pay</th>
+                        <th>Travel</th>
+                        <th>Total Pay</th>
+                    </tr>
+                </thead>
+                <tbody id="paysheet-body">
+                    <!-- Pay sheet rows will be added by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Client Charges Section -->
+        <section id="charges">
+            <h2>Client Charges</h2>
+            <table id="charges-table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Site</th>
+                        <th>Worker</th>
+                        <th>Classification</th>
+                        <th>Normal Hours</th>
+                        <th>Normal Charge</th>
+                        <th>T&H Hours</th>
+                        <th>T&H Charge</th>
+                        <th>Double Hours</th>
+                        <th>Double Charge</th>
+                        <th>Travel</th>
+                        <th>Total Charge</th>
+                    </tr>
+                </thead>
+                <tbody id="charges-body">
+                    <!-- Charge rows will be added by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>Blue Collar People - Labour Hire Management System</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
