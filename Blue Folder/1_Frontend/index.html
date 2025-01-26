@@ -1,0 +1,77 @@
+#index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Folder - Labour Hire Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Blue Folder System</h1>
+        <nav>
+            <ul>
+                <li><a href="#summary">Weekly Summary</a></li>
+                <li><a href="#timesheets">Timesheets</a></li>
+                <li><a href="#workers">Workers</a></li>
+                <li><a href="#clients">Clients</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Weekly Summary Section -->
+        <section id="summary">
+            <h2>Weekly Summary</h2>
+            <!-- Content will go here -->
+        </section>
+
+        <!-- Timesheets Section -->
+        <section id="timesheets">
+            <h2>Timesheets</h2>
+            <!-- Content will go here -->
+            <table id="timesheet-table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Site</th>
+                        <th>Worker</th>
+                        <th>Classification</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                        <th>Sun</th>
+                        <th>Normal</th>
+                        <th>T&H</th>
+                        <th>Double</th>
+                    </tr>
+                </thead>
+                <tbody id="timesheet-body">
+                    <!-- Timesheet rows will be added by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Workers Section -->
+        <section id="workers">
+            <h2>Workers</h2>
+            <!-- Content will go here -->
+        </section>
+
+        <!-- Clients Section -->
+        <section id="clients">
+            <h2>Clients</h2>
+            <!-- Content will go here -->
+        </section>
+    </main>
+
+    <footer>
+        <p>Blue Collar People - Labour Hire Management System</p>
+    </footer>
+<script src="script.js"></script>    
+</body>
+</html>
