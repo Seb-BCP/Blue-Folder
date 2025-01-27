@@ -12,6 +12,7 @@ header {
     color: white;
     padding: 20px;
     border-radius: 5px;
+    margin-bottom: 20px;
 }
 
 /* Navigation styling */
@@ -42,6 +43,59 @@ section {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow-x: auto;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #f0f8ff;
+    font-weight: bold;
+}
+
+/* Input styling */
+input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+select {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+/* Specific table styles */
+#summary-table td, #summary-table th {
+    background-color: #f8f9fa;
+}
+
+#timesheet-table input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#paysheet-table td, #charges-table td {
+    background-color: #fff;
+}
+
+/* Total columns styling */
+td:last-child, th:last-child {
+    background-color: #f0f8ff;
+    font-weight: bold;
 }
 
 /* Footer styling */
@@ -49,4 +103,83 @@ footer {
     text-align: center;
     padding: 20px;
     color: #666;
+    margin-top: 20px;
+}
+
+/* Night shift styling */
+.night-shift {
+    color: red;
+}
+
+.shift-select option[value="NS"] {
+    color: red;
+}
+
+/* Style for when NS is selected */
+.shift-select:has(option[value="NS"]:checked) {
+    color: red;
+}
+
+/* Additional table styling */
+.table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+#timesheet-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#timesheet-table th,
+#timesheet-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+#timesheet-table th {
+    background-color: #f5f5f5;
+}
+
+/* Input styling */
+.hours-input {
+    width: 60px;
+    padding: 4px;
+}
+
+.shift-select {
+    width: 70px;
+    padding: 4px;
+}
+
+.client-site-input,
+.worker-input {
+    width: 100%;
+    padding: 4px;
+}
+
+/* Control buttons */
+.controls {
+    margin-top: 20px;
+}
+
+.controls button {
+    padding: 8px 16px;
+    margin-right: 10px;
+}
+
+/* Classification input styling */
+.classification-input {
+    width: 50%;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin: 2px 0;
+}
+
+/* Adjust table cell padding for classification inputs */
+#classifications-table td {
+    padding: 4px;
+    vertical-align: middle;
 }
