@@ -1,10 +1,229 @@
+// Function to update classification dropdowns
+function updateClassificationDropdowns() {
+    // Get all current classifications from the classifications table
+    const classificationInputs = document.querySelectorAll('#classifications-body .classification-input');
+    const classifications = Array.from(classificationInputs).map(input => input.value).filter(value => value);
+
+    // Get all classification select elements
+    const classificationSelects = document.querySelectorAll('.classification-select');
+
+    // Update each dropdown
+    classificationSelects.forEach(select => {
+        // Store current selection
+        const currentValue = select.value;
+        
+        // Clear current options
+        select.innerHTML = '';
+        
+        // Add blank option first
+        select.add(new Option('Select Classification', ''));
+        
+        // Add all classifications
+        classifications.forEach(classification => {
+            select.add(new Option(classification, classification));
+        });
+
+        // Restore previous selection if it still exists
+        if (classifications.includes(currentValue)) {
+            select.value = currentValue;
+        }
+    });
+}
+
+// Add event listeners for classification changes
+function addClassificationChangeListeners() {
+    const classificationsTable = document.getElementById('classifications-body');
+    
+    // Listen for changes to classification names
+    classificationsTable.addEventListener('input', (e) => {
+        if (e.target.classList.contains('classification-input')) {
+            updateClassificationDropdowns();
+        }
+    });
+}
+
+// Modify the existing addClassificationRow function
+function addClassificationRow() {
+    // ... existing code ...
+    
+    // After adding the new rows, update the dropdowns
+    updateClassificationDropdowns();
+}
+
+// Update the DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+    populateClassificationsTable();
+    updateClassificationDropdowns();
+    addClassificationChangeListeners();
+    
+    const addClassificationButton = document.getElementById('add-classification');
+    if (addClassificationButton) {
+        addClassificationButton.addEventListener('click', addClassificationRow);
+    }
+});
+
+// Default classifications and rates
+const defaultClassifications = [
+    {
+        name: "Contruction TA",
+        payRates: {
+            normalTime: 35.04,
+            timeHalf: 49.05,
+            doubleTime: 63.07,
+            shift: 49.05,
+            travel: 21.94
+        },
+        chargeRates: {
+            normalTime: 52.15,
+            timeHalf: 63.65,
+            doubleTime: 79.45,
+            shift: 69.65,
+            travel: 26.55
+        }
+    },
+    {
+        name: "CLAB",
+        payRates: {
+            normalTime: 33.81,
+            timeHalf: 47.34,
+            doubleTime: 60.86,
+            shift: 47.34,
+            travel: 21.94
+        },
+        chargeRates: {
+            normalTime: 49.65,
+            timeHalf: 61.00,
+            doubleTime: 76.15,
+            shift: 66.40,
+            travel: 26.55
+        }
+    },
+    {
+        name: "C-LF",
+        payRates: {
+            normalTime: 36.00,
+            timeHalf: 50.40,
+            doubleTime: 64.80,
+            shift: 50.40,
+            travel: 21.94
+        },
+        chargeRates: {
+            normalTime: 53.75,
+            timeHalf: 65.25,
+            doubleTime: 81.35,
+            shift: 71.30,
+            travel: 26.55
+        }
+    },
+    {
+        name: "LF",
+        payRates: {
+            normalTime: 33.50,
+            timeHalf: 45.15,
+            doubleTime: 58.05,
+            shift: 39.99,
+            travel: 0.00
+        },
+        chargeRates: {
+            normalTime: 49.95,
+            timeHalf: 60.55,
+            doubleTime: 75.00,
+            shift: 59.60,
+            travel: 0.00
+        }
+    },
+    {
+        name: "Labourer",
+        payRates: {
+            normalTime: 32.00,
+            timeHalf: 44.75,
+            doubleTime: 57.53,
+            shift: 39.63,
+            travel: 0.00
+        },
+        chargeRates: {
+            normalTime: 48.50,
+            timeHalf: 58.45,
+            doubleTime: 72.75,
+            shift: 57.65,
+            travel: 0.00
+        }
+    },
+    {
+        name: "TA",
+        payRates: {
+            normalTime: 34.00,
+            timeHalf: 45.15,
+            doubleTime: 58.05,
+            shift: 39.99,
+            travel: 0.00
+        },
+        chargeRates: {
+            normalTime: 51.20,
+            timeHalf: 60.55,
+            doubleTime: 75.00,
+            shift: 59.60,
+            travel: 0.00
+        }
+    }
+];
+
+function getClassificationOptions() {
+    const classificationInputs = document.querySelectorAll('#classifications-body .classification-input');
+    return Array.from(classificationInputs)
+        .map(input => input.value)
+        .filter(value => value)
+        .map(classification => `<option value="${classification}">${classification}</option>`)
+        .join('');
+}
+
+// Function to populate classifications table on page load
+function populateClassificationsTable() {
+    const tbody = document.getElementById('classifications-body');
+    tbody.innerHTML = ''; // Clear existing content
+
+    defaultClassifications.forEach(classification => {
+        const rows = `
+            <tr>
+                <td rowspan="2">
+                    <input type="text" class="classification-input" value="${classification.name}">
+                </td>
+                <td>Pay Rate</td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.payRates.normalTime}"></td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.payRates.timeHalf}"></td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.payRates.doubleTime}"></td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.payRates.shift}"></td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.payRates.travel}"></td>
+            </tr>
+            <tr>
+                <td>Charge Rate</td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.chargeRates.normalTime}"></td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.chargeRates.timeHalf}"></td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.chargeRates.doubleTime}"></td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.chargeRates.shift}"></td>
+                <td><input type="number" step="0.01" class="rate-input" value="${classification.chargeRates.travel}"></td>
+            </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', rows);
+    });
+}
+
+// Call the populate function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    populateClassificationsTable();
+});
+
 function toggleShift(button) {
     if (button.textContent === 'DS') {
         button.textContent = 'NS';
+        button.classList.add('night-shift');  // Add this line
     } else {
         button.textContent = 'DS';
+        button.classList.remove('night-shift');  // Add this line
     }
 }
+
+
 
 // Data structures for classifications and rates
 const classifications = {
@@ -147,8 +366,8 @@ class BlueFolder {
             <td><input type="text" class="worker-input"></td>
             <td>
                 <select class="classification-select">
-                    <option value="CLAB">CLAB</option>
-                    <option value="LF">LF</option>
+                    <option value="">Select Classification</option>
+                    ${getClassificationOptions()}
                 </select>
             </td>
             <td><input type="number" class="hours-input" step="0.1" min="0"></td>
