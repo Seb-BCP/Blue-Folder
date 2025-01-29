@@ -50,18 +50,6 @@ function addClassificationRow() {
     updateClassificationDropdowns();
 }
 
-// Update the DOMContentLoaded event listener
-document.addEventListener('DOMContentLoaded', function() {
-    populateClassificationsTable();
-    updateClassificationDropdowns();
-    addClassificationChangeListeners();
-    
-    const addClassificationButton = document.getElementById('add-classification');
-    if (addClassificationButton) {
-        addClassificationButton.addEventListener('click', addClassificationRow);
-    }
-});
-
 // Default classifications and rates
 const defaultClassifications = [
     {
@@ -208,49 +196,95 @@ function populateClassificationsTable() {
     });
 }
 
-// Call the populate function when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    populateClassificationsTable();
-});
+function updateRowTotals(row) {
+    const totalCell = row.querySelector('.total-hours');
+    const hoursInputs = row.querySelectorAll('.hours-input');
+    let total = 0;
+    
+    hoursInputs.forEach(hourInput => {
+        const value = parseFloat(hourInput.value) || 0;
+        if (!isNaN(value)) {
+            total += value;
+        }
+    });
+    
+    totalCell.textContent = total.toFixed(1);
+}
 
-function toggleShift(button) {
-    if (button.textContent === 'DS') {
-        button.textContent = 'NS';
-        button.classList.add('night-shift');  // Add this line
-    } else {
-        button.textContent = 'DS';
-        button.classList.remove('night-shift');  // Add this line
-    }
+function updatePaySheets() {
+    const paysheetBody = document.getElementById('paysheet-body');
+    paysheetBody.innerHTML = '';
+    
+    // Group by worker and classification
+    const timesheetRows = Array.from(document.getElementById('timesheet-body').children);
+    const workerData = new Map();
+    
+    timesheetRows.forEach(row => {
+        const worker = row.querySelector('.worker-input').value;
+        if (!worker) return; // Skip empty rows
+        
+        const classification = row.querySelector('.classification-select').value;
+        if (!classification) return; // Skip rows without classification
+        
+        // Find the classification rates
+        const classificationData = defaultClassifications.find(c => c.name === classification);
+        if (!classificationData) return; // Skip if classification not found
+        
+        if (!workerData.has(worker)) {
+            workerData.set(worker, {
+                classification: classification,
+                rates: classificationData.payRates,
+                hours: { normal: 0, timeHalf: 0, double: 0 },
+                daysWorked: 0 // For travel allowance
+            });
+        }
+        
+        const data = workerData.get(worker);
+        const dayInputs = row.querySelectorAll('.hours-input');
+        dayInputs.forEach((input, index) => {
+            const hours = parseFloat(input.value) || 0;
+            if (hours > 0) data.daysWorked++; // Count days worked for travel
+            
+            const isWeekend = index >= 5 ? (index === 6 ? 'sunday' : 'saturday') : false;
+            const dayTotals = calculateDayHours(hours, isWeekend);
+            
+            data.hours.normal += dayTotals.normal;
+            data.hours.timeHalf += dayTotals.timeHalf;
+            data.hours.double += dayTotals.double;
+        });
+    });    
+
+    // Create paysheet rows
+    workerData.forEach((data, worker) => {
+        const row = document.createElement('tr');
+        
+        // Calculate pays
+        const normalPay = data.hours.normal * data.rates.normalTime;
+        const timeHalfPay = data.hours.timeHalf * data.rates.timeHalf;
+        const doublePay = data.hours.double * data.rates.doubleTime;
+        const travelPay = data.rates.travel > 0 ? data.rates.travel * data.daysWorked : 0;
+        const totalPay = normalPay + timeHalfPay + doublePay + travelPay;
+        
+        row.innerHTML = `
+            <td>${worker}</td>
+            <td>${data.classification}</td>
+            <td>${data.hours.normal.toFixed(1)}</td>
+            <td>$${data.rates.normalTime.toFixed(2)}</td>
+            <td>$${normalPay.toFixed(2)}</td>
+            <td>${data.hours.timeHalf.toFixed(1)}</td>
+            <td>$${data.rates.timeHalf.toFixed(2)}</td>
+            <td>$${timeHalfPay.toFixed(2)}</td>
+            <td>${data.hours.double.toFixed(1)}</td>
+            <td>$${data.rates.doubleTime.toFixed(2)}</td>
+            <td>$${doublePay.toFixed(2)}</td>
+            <td>$${travelPay.toFixed(2)}</td>
+            <td>$${totalPay.toFixed(2)}</td>
+        `;
+        paysheetBody.appendChild(row);
+    });
 }
 
 
-
-// Data structures for classifications and rates
-const classifications = {
-    CLAB: {
-        normalRate: 33.81,
-        timeHalfRate: 47.24,
-        doubleRate: 60.86,
-        shiftRate: 47.34,
-        travelAllowance: 21.94,
-        clientNormalRate: 49.65,
-        clientTimeHalfRate: 74.48,
-        clientDoubleRate: 99.30,
-        category: 'Construction'
-    },
-    'LF': {
-        normalRate: 33.50,
-        timeHalfRate: 46.75,
-        doubleRate: 58.20,
-        shiftRate: 41.25,
-        travelAllowance: 21.94,
-        clientNormalRate: 52.80,
-        clientTimeHalfRate: 79.20,
-        clientDoubleRate: 105.60,
-        category: 'Construction'
-    }
-    // Add more classifications as needed
-};
 
 // Hour calculation functions
 function calculateDayHours(hours, isWeekend = false) {
@@ -343,18 +377,7 @@ class TimesheetRow {
 class BlueFolder {
     constructor() {
         this.timesheetRows = [];
-        this.initializeEventListeners();
-    }
-
-    initializeEventListeners() {
-        document.addEventListener('DOMContentLoaded', () => {
-            // Add button event listeners
-            document.getElementById('add-row').addEventListener('click', () => {
-                this.addTimesheetRow();
-            });
-        });
-    }
-    
+    }    
 
     addTimesheetRow() {
         const tbody = document.getElementById('timesheet-body');
@@ -362,6 +385,7 @@ class BlueFolder {
         
         // Create input cells
         row.innerHTML = `
+            
             <td><input type="text" class="client-site-input"></td>
             <td><input type="text" class="worker-input"></td>
             <td>
@@ -370,32 +394,40 @@ class BlueFolder {
                     ${getClassificationOptions()}
                 </select>
             </td>
-            <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-            <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-            <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-            <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-            <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-            <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-            <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-            <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="monday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="tuesday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="wednesday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="thursday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="friday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="saturday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="sunday"></td>
             <td class="total-hours">0.0</td>
         `;
-    
-        // Add event listeners to inputs
+
+
         row.querySelectorAll('.hours-input').forEach(input => {
-            input.addEventListener('change', (e) => {
-                this.updateRowCalculations(row);
-                this.updateSummary();
-                this.updatePaySheets();
-                this.updateCharges();
+            input.addEventListener('input', () => {
+                updateRowTotals(row);
+                updatePaySheets();  // Add this line
             });
         });
+        
+        
+        // Add this new function outside of addTimesheetRow
+        function updateRowTotals(row) {
+            const totalCell = row.querySelector('.total-hours');
+            const hoursInputs = row.querySelectorAll('.hours-input');
+            let total = 0;
+            
+            hoursInputs.forEach(hourInput => {
+                const value = parseFloat(hourInput.value) || 0;
+                if (!isNaN(value)) {
+                    total += value;
+                }
+            });
+            
+            totalCell.textContent = total.toFixed(1);
+        }
     
         tbody.appendChild(row);
         this.updateSummary();
@@ -422,106 +454,6 @@ class BlueFolder {
         row.querySelector('.normal-hours').textContent = totals.normal.toFixed(1);
         row.querySelector('.time-half-hours').textContent = totals.timeHalf.toFixed(1);
         row.querySelector('.double-hours').textContent = totals.double.toFixed(1);
-    }
-
-    updateSummary() {
-        const summaryBody = document.getElementById('summary-body');
-        summaryBody.innerHTML = '';
-        
-        // Group timesheet data by client/site/worker
-        const timesheetRows = Array.from(document.getElementById('timesheet-body').children);
-        const summaryData = new Map();
-        
-        timesheetRows.forEach(row => {
-            const key = `${row.querySelector('.client-input').value}-
-                        ${row.querySelector('.site-input').value}-
-                        ${row.querySelector('.worker-input').value}`;
-            
-            if (!summaryData.has(key)) {
-                summaryData.set(key, {
-                    client: row.querySelector('.client-input').value,
-                    site: row.querySelector('.site-input').value,
-                    worker: row.querySelector('.worker-input').value,
-                    classification: row.querySelector('.classification-select').value,
-                    totalHours: 0
-                });
-            }
-            
-            const total = parseFloat(row.querySelector('.normal-hours').textContent) +
-                         parseFloat(row.querySelector('.time-half-hours').textContent) +
-                         parseFloat(row.querySelector('.double-hours').textContent);
-            
-            summaryData.get(key).totalHours += total;
-        });
-        
-        // Create summary rows
-        summaryData.forEach(data => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${data.client}</td>
-                <td>${data.site}</td>
-                <td>${data.worker}</td>
-                <td>${data.classification}</td>
-                <td>${data.totalHours.toFixed(1)}</td>
-            `;
-            summaryBody.appendChild(row);
-        });
-    }
-
-    updatePaySheets() {
-        const paysheetBody = document.getElementById('paysheet-body');
-        paysheetBody.innerHTML = '';
-        
-        // Group by worker
-        const timesheetRows = Array.from(document.getElementById('timesheet-body').children);
-        const workerData = new Map();
-        
-        timesheetRows.forEach(row => {
-            const worker = row.querySelector('.worker-input').value;
-            const classification = row.querySelector('.classification-select').value;
-            
-            if (!workerData.has(worker)) {
-                workerData.set(worker, {
-                    classification: classification,
-                    hours: { normal: 0, timeHalf: 0, double: 0 }
-                });
-            }
-            
-            const data = workerData.get(worker);
-            data.hours.normal += parseFloat(row.querySelector('.normal-hours').textContent);
-            data.hours.timeHalf += parseFloat(row.querySelector('.time-half-hours').textContent);
-            data.hours.double += parseFloat(row.querySelector('.double-hours').textContent);
-        });
-        
-        // Create paysheet rows
-        workerData.forEach((data, worker) => {
-            const rates = classifications[data.classification];
-            const row = document.createElement('tr');
-            const pay = {
-                normal: data.hours.normal * rates.normalRate,
-                timeHalf: data.hours.timeHalf * rates.timeHalfRate,
-                double: data.hours.double * rates.doubleRate,
-                travel: rates.travelAllowance
-            };
-            const total = pay.normal + pay.timeHalf + pay.double + pay.travel;
-            
-            row.innerHTML = `
-                <td>${worker}</td>
-                <td>${data.classification}</td>
-                <td>${data.hours.normal.toFixed(1)}</td>
-                <td>$${rates.normalRate.toFixed(2)}</td>
-                <td>$${pay.normal.toFixed(2)}</td>
-                <td>${data.hours.timeHalf.toFixed(1)}</td>
-                <td>$${rates.timeHalfRate.toFixed(2)}</td>
-                <td>$${pay.timeHalf.toFixed(2)}</td>
-                <td>${data.hours.double.toFixed(1)}</td>
-                <td>$${rates.doubleRate.toFixed(2)}</td>
-                <td>$${pay.double.toFixed(2)}</td>
-                <td>$${pay.travel.toFixed(2)}</td>
-                <td>$${total.toFixed(2)}</td>
-            `;
-            paysheetBody.appendChild(row);
-        });
     }
 
     updateCharges() {
@@ -613,11 +545,65 @@ function addClassificationRow() {
 
 // Add event listener for the classification button
 document.addEventListener('DOMContentLoaded', function() {
-    const addClassificationButton = document.getElementById('add-classification');
-    if (addClassificationButton) {
-        addClassificationButton.addEventListener('click', addClassificationRow);
+    populateClassificationsTable();
+    updateClassificationDropdowns();
+    addClassificationChangeListeners();
+
+    const defaultRow = document.querySelector('#timesheet-body tr');
+    if (defaultRow) {
+        // Add event listeners for hour inputs
+        defaultRow.querySelectorAll('.hours-input').forEach(input => {
+            input.addEventListener('input', () => {
+                updateRowTotals(defaultRow);
+                updatePaySheets();
+            });
+        });
+        
+        // Add event listener for classification change
+        defaultRow.querySelector('.classification-select').addEventListener('change', () => {
+            updatePaySheets();
+        });
+    }
+    
+    const addRowButton = document.getElementById('add-row');
+    if (addRowButton) {
+        addRowButton.addEventListener('click', () => {
+            const tbody = document.getElementById('timesheet-body');
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td><input type="text" class="client-site-input"></td>
+                <td><input type="text" class="worker-input"></td>
+                <td>
+                    <select class="classification-select">
+                        <option value="">Select Classification</option>
+                        ${getClassificationOptions()}
+                    </select>
+                </td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="monday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="tuesday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="wednesday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="thursday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="friday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="saturday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="sunday"></td>
+                <td class="total-hours">0.0</td>
+            `;
+
+            // Add event listeners to the new row's inputs
+            row.querySelectorAll('.hours-input').forEach(input => {
+                input.addEventListener('input', () => {
+                    updateRowTotals(row);
+                    updatePaySheets();
+                });
+            });
+            
+            // Add classification change listener to the new row
+            row.querySelector('.classification-select').addEventListener('change', () => {
+                updatePaySheets();
+            });
+            
+            tbody.appendChild(row);
+        });
     }
 });
-
-// Initialize the application
-const blueFolder = new BlueFolder();

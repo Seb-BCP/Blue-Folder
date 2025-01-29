@@ -11,7 +11,6 @@
         <h1>Blue Folder System</h1>
         <nav>
             <ul>
-                <li><a href="#summary">Weekly Summary</a></li>
                 <li><a href="#timesheets">Timesheets</a></li>
                 <li><a href="#paysheets">Pay Sheets</a></li>
                 <li><a href="#charges">Client Charges</a></li>
@@ -21,24 +20,6 @@
     </header>
 
     <main>
-        <!-- Weekly Summary Section -->
-        <section id="summary">
-            <h2>Weekly Summary</h2>
-            <table id="summary-table">
-                <thead>
-                    <tr>
-                        <th>Client</th>
-                        <th>Site</th>
-                        <th>Worker</th>
-                        <th>Classification</th>
-                        <th>Total Hours</th>
-                    </tr>
-                </thead>
-                <tbody id="summary-body">
-                    <!-- Summary rows will be added by JavaScript -->
-                </tbody>
-            </table>
-        </section>
 
         <!-- Timesheets Section -->
         <section id="timesheets">
@@ -50,19 +31,12 @@
                         <th>Worker</th>
                         <th>Classification</th>
                         <th>Monday</th>
-                        <th>Shift</th>
                         <th>Tuesday</th>
-                        <th>Shift</th>
                         <th>Wednesday</th>
-                        <th>Shift</th>
                         <th>Thursday</th>
-                        <th>Shift</th>
                         <th>Friday</th>
-                        <th>Shift</th>
                         <th>Saturday</th>
-                        <th>Shift</th>
                         <th>Sunday</th>
-                        <th>Shift</th>
                         <th>Total Hours</th>
                     <tr>    
                 </thead>
@@ -72,24 +46,14 @@
                         <td><input type="text" class="worker-input"></td>
                         <td>
                             <select class="classification-select">
-                                <option value="CLAB">CLAB</option>
-                                <option value="LF">LF</option>
-                            </select>
                         </td>
-                        <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-                        <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-                        <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-                        <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-                        <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-                        <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-                        <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-                        <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-                        <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-                        <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-                        <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-                        <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
-                        <td><input type="number" class="hours-input" step="0.1" min="0"></td>
-                        <td><button type="button" class="shift-button" onclick="toggleShift(this)">DS</button></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Monday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Tuesday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Wednesday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Thursday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Friday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Saturday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Sunday"></td>
                         <td class="total-hours">0.0</td>
                     </tr>
                 </tbody>    
@@ -107,7 +71,6 @@
                     <tr>
                         <th>Worker</th>
                         <th>Classification</th>
-                        <th>Shift Type</th>
                         <th>Normal Hours</th>
                         <th>Normal Rate</th>
                         <th>Normal Pay</th>

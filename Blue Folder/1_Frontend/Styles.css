@@ -106,19 +106,6 @@ footer {
     margin-top: 20px;
 }
 
-/* Night shift styling */
-.night-shift {
-    color: red;
-}
-
-.shift-select option[value="NS"] {
-    color: red;
-}
-
-/* Style for when NS is selected */
-.shift-select:has(option[value="NS"]:checked) {
-    color: red;
-}
 
 /* Additional table styling */
 .table-container {
@@ -145,11 +132,6 @@ footer {
 /* Input styling */
 .hours-input {
     width: 60px;
-    padding: 4px;
-}
-
-.shift-select {
-    width: 70px;
     padding: 4px;
 }
 
