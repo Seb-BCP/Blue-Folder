@@ -285,6 +285,39 @@ function updatePaySheets() {
 }
 
 
+// Add this after updatePaySheets() function
+function updateClientCharges() {
+    const chargesBody = document.getElementById('charges-body');
+    chargesBody.innerHTML = '';
+    
+    const timesheetRows = Array.from(document.getElementById('timesheet-body').children);
+    const clientData = new Map();
+    
+    timesheetRows.forEach(row => {
+        const clientSite = row.querySelector('.client-site-input').value;
+        const worker = row.querySelector('.worker-input').value;
+        if (!clientSite || !worker) return;
+        
+        const classification = row.querySelector('.classification-select').value;
+        if (!classification) return;
+        
+        const classificationData = defaultClassifications.find(c => c.name === classification);
+        if (!classificationData) return;
+        
+        const key = `${clientSite}-${worker}`;
+        if (!clientData.has(key)) {
+            clientData.set(key, {
+                clientSite: clientSite,
+                worker: worker,
+                classification: classification,
+                rates: classificationData.chargeRates,
+                hours: { normal: 0, timeHalf: 0, double: 0 },
+                daysWorked: 0
+            });
+        }
+    });
+}
+
 
 // Hour calculation functions
 function calculateDayHours(hours, isWeekend = false) {
@@ -460,46 +493,76 @@ class BlueFolder {
         const chargesBody = document.getElementById('charges-body');
         chargesBody.innerHTML = '';
         
-        // Group by client/site/worker
         const timesheetRows = Array.from(document.getElementById('timesheet-body').children);
         const clientData = new Map();
         
         timesheetRows.forEach(row => {
-            const key = `${row.querySelector('.client-input').value}-
-                        ${row.querySelector('.site-input').value}-
-                        ${row.querySelector('.worker-input').value}`;
+            // Get client/site from combined input
+            const clientSiteValue = row.querySelector('.client-site-input').value;
+            const worker = row.querySelector('.worker-input').value;
+            const classification = row.querySelector('.classification-select').value;
+            
+            if (!clientSiteValue || !worker || !classification) return;
+            
+            const key = `${clientSiteValue}-${worker}`;
             
             if (!clientData.has(key)) {
                 clientData.set(key, {
-                    client: row.querySelector('.client-input').value,
-                    site: row.querySelector('.site-input').value,
-                    worker: row.querySelector('.worker-input').value,
-                    classification: row.querySelector('.classification-select').value,
+                    clientSite: clientSiteValue,
+                    worker: worker,
+                    classification: classification,
                     hours: { normal: 0, timeHalf: 0, double: 0 }
                 });
             }
             
+            // Get hours from Pay Sheets calculations
             const data = clientData.get(key);
-            data.hours.normal += parseFloat(row.querySelector('.normal-hours').textContent);
-            data.hours.timeHalf += parseFloat(row.querySelector('.time-half-hours').textContent);
-            data.hours.double += parseFloat(row.querySelector('.double-hours').textContent);
+            const classificationData = defaultClassifications.find(c => c.name === classification);
+            if (!classificationData) return;
+            
+            // Calculate hours breakdown using existing calculateDayHours function
+            const dayInputs = row.querySelectorAll('.hours-input');
+            dayInputs.forEach((input, index) => {
+                const hours = parseFloat(input.value) || 0;
+                const isWeekend = index >= 5 ? (index === 6 ? 'sunday' : 'saturday') : false;
+                const dayTotals = calculateDayHours(hours, isWeekend);
+                
+                data.hours.normal += dayTotals.normal;
+                data.hours.timeHalf += dayTotals.timeHalf;
+                data.hours.double += dayTotals.double;
+            });
         });
         
         // Create charge rows
         clientData.forEach(data => {
-            const rates = classifications[data.classification];
-            const charges = {
-                normal: data.hours.normal * rates.clientNormalRate,
-                timeHalf: data.hours.timeHalf * rates.clientTimeHalfRate,
-                double: data.hours.double * rates.clientDoubleRate,
-                travel: rates.travelAllowance * 1.5
-            };
-            const total = charges.normal + charges.timeHalf + charges.double + charges.travel;
+            const classificationData = defaultClassifications.find(c => c.name === data.classification);
+            if (!classificationData) return;
             
+            // Calculate days worked from the original timesheet rows
+            let daysWorked = Array.from(document.querySelectorAll(`#timesheet-body tr`))
+                .filter(row => 
+                    row.querySelector('.client-site-input').value === data.clientSite &&
+                    row.querySelector('.worker-input').value === data.worker
+                )
+                .reduce((days, row) => {
+                    return days + Array.from(row.querySelectorAll('.hours-input'))
+                        .reduce((dayCount, input) => 
+                            dayCount + (parseFloat(input.value) > 0 ? 1 : 0), 0);
+                }, 0);
+            
+            const charges = {
+                normal: data.hours.normal * classificationData.chargeRates.normalTime,
+                timeHalf: data.hours.timeHalf * classificationData.chargeRates.timeHalf,
+                double: data.hours.double * classificationData.chargeRates.doubleTime,
+                travel: classificationData.chargeRates.travel * daysWorked  // Multiply by days worked
+            };
+
+            const subtotal = charges.normal + charges.timeHalf + charges.double;
+            const total = subtotal + charges.travel;
+
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${data.client}</td>
-                <td>${data.site}</td>
+                <td>${data.clientSite}</td>
                 <td>${data.worker}</td>
                 <td>${data.classification}</td>
                 <td>${data.hours.normal.toFixed(1)}</td>
@@ -514,6 +577,7 @@ class BlueFolder {
             chargesBody.appendChild(row);
         });
     }
+    
 }
 
 // Classification management
@@ -556,6 +620,8 @@ document.addEventListener('DOMContentLoaded', function() {
             input.addEventListener('input', () => {
                 updateRowTotals(defaultRow);
                 updatePaySheets();
+                const blueFolder = new BlueFolder();  // Add this line
+                blueFolder.updateCharges();     
             });
         });
         
@@ -603,12 +669,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 input.addEventListener('input', () => {
                     updateRowTotals(row);
                     updatePaySheets();
+                    const blueFolder = new BlueFolder();  // Add this line
+                    blueFolder.updateCharges();  
                 });
             });
             
             // Add classification change listener to the new row
             row.querySelector('.classification-select').addEventListener('change', () => {
                 updatePaySheets();
+                const blueFolder = new BlueFolder();  // Add this line
+                blueFolder.updateCharges();    
             });
 
             
