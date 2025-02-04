@@ -564,7 +564,15 @@ document.addEventListener('DOMContentLoaded', function() {
             updatePaySheets();
         });
     }
-    
+
+    const addClassificationButton = document.getElementById('add-classification');
+            if (addClassificationButton) {
+                addClassificationButton.addEventListener('click', () => {
+                    addClassificationRow();
+                    updateClassificationDropdowns();  // Update dropdowns when new classification is added
+                });
+            }
+
     const addRowButton = document.getElementById('add-row');
     if (addRowButton) {
         addRowButton.addEventListener('click', () => {
@@ -602,8 +610,11 @@ document.addEventListener('DOMContentLoaded', function() {
             row.querySelector('.classification-select').addEventListener('change', () => {
                 updatePaySheets();
             });
+
+            
             
             tbody.appendChild(row);
         });
     }
+
 });
