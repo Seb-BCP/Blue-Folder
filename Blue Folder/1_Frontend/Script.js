@@ -30,6 +30,7 @@ function updateClassificationDropdowns() {
     });
 }
 
+
 // Add event listeners for classification changes
 function addClassificationChangeListeners() {
     const classificationsTable = document.getElementById('classifications-body');
@@ -59,29 +60,21 @@ function setupLiveUpdates() {
 function updateCounts() {
     // Update Timesheet count
     const timesheetRows = document.querySelectorAll('#timesheet-body tr').length;
-    document.getElementById('timesheet-count').textContent = `Timesheet Entries: ${timesheetRows}`;
+    document.getElementById('timesheet-count').textContent = `Entries: ${timesheetRows}`;
 
     // Update Pay Sheet count
     const paysheetRows = document.querySelectorAll('#paysheet-body tr').length;
-    document.getElementById('paysheet-count').textContent = `Pay Sheet Entries: ${paysheetRows}`;
+    document.getElementById('paysheet-count').textContent = `Entries: ${paysheetRows}`;
 
     // Update Client Charges count
     const chargesRows = document.querySelectorAll('#charges-body tr').length;
-    document.getElementById('charges-count').textContent = `Client Charge Entries: ${chargesRows}`;
-}
-
-// Modify the existing addClassificationRow function
-function addClassificationRow() {
-    // ... existing code ...
-    
-    // After adding the new rows, update the dropdowns
-    updateClassificationDropdowns();
+    document.getElementById('charges-count').textContent = `Entries: ${chargesRows}`;
 }
 
 // Default classifications and rates
 const defaultClassifications = [
     {
-        name: "Contruction TA",
+        name: "Construction TA",
         payRates: {
             normalTime: 35.04,
             timeHalf: 49.05,
@@ -284,8 +277,6 @@ function updatePaySheets() {
     // Group by worker and classification
     const timesheetRows = Array.from(document.getElementById('timesheet-body').children);
     const workerData = new Map();
-
-    updateCounts();
     
     timesheetRows.forEach(row => {
         const worker = row.querySelector('.worker-input').value;
@@ -320,6 +311,7 @@ function updatePaySheets() {
             data.hours.timeHalf += dayTotals.timeHalf;
             data.hours.double += dayTotals.double;
         });
+
     });    
 
     // Create paysheet rows
@@ -353,6 +345,8 @@ function updatePaySheets() {
             <td>$${totalPay.toFixed(2)}</td>
         `;
         paysheetBody.appendChild(row);
+
+        updateCounts();
     });
 }
 
@@ -364,8 +358,6 @@ function updateClientCharges() {
     
     const timesheetRows = Array.from(document.getElementById('timesheet-body').children);
     const clientData = new Map();
-
-    updateCounts();
     
     timesheetRows.forEach(row => {
         const clientSite = row.querySelector('.client-site-input').value;
@@ -375,7 +367,7 @@ function updateClientCharges() {
         const classification = row.querySelector('.classification-select').value;
         if (!classification) return;
         
-        const classificationData = getCurrentRates().get(data.classification);
+        const classificationData = getCurrentRates().get(classification);
         if (!classificationData) return;
         
         const key = `${clientSite}-${worker}`;
@@ -390,6 +382,7 @@ function updateClientCharges() {
             });
         }
     });
+
 }
 
 
@@ -424,13 +417,13 @@ class TimesheetRow {
         this.site = site;
         this.classification = classification;
         this.hours = {
-            monday: 0,
-            tuesday: 0,
-            wednesday: 0,
-            thursday: 0,
-            friday: 0,
-            saturday: 0,
-            sunday: 0
+            Monday: 0,
+            Tuesday: 0,
+            Wednesday: 0,
+            Thursday: 0,
+            Friday: 0,
+            Faturday: 0,
+            Sunday: 0
         };
     }
 
@@ -502,13 +495,13 @@ class BlueFolder {
                     ${getClassificationOptions()}
                 </select>
             </td>
-            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="monday"></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="tuesday"></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="wednesday"></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="thursday"></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="friday"></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="saturday"></td>
-            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="sunday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Monday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day=Tuesday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Wednesday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Thursday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Friday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Saturday"></td>
+            <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Sunday"></td>
             <td class="total-hours">0.0</td>
         `;
 
@@ -516,29 +509,11 @@ class BlueFolder {
         row.querySelectorAll('.hours-input').forEach(input => {
             input.addEventListener('input', () => {
                 updateRowTotals(row);
-                updatePaySheets();  // Add this line
+                updatePaySheets();  
             });
         });
-        
-        
-        // Add this new function outside of addTimesheetRow
-        function updateRowTotals(row) {
-            const totalCell = row.querySelector('.total-hours');
-            const hoursInputs = row.querySelectorAll('.hours-input');
-            let total = 0;
-            
-            hoursInputs.forEach(hourInput => {
-                const value = parseFloat(hourInput.value) || 0;
-                if (!isNaN(value)) {
-                    total += value;
-                }
-            });
-            
-            totalCell.textContent = total.toFixed(1);
-        }
     
         tbody.appendChild(row);
-        this.updateSummary();
     }
 
     updateRowCalculations(row) {
@@ -550,8 +525,7 @@ class BlueFolder {
         const classification = row.querySelector('.classification-select').value;
         const timesheetRow = new TimesheetRow(
             row.querySelector('.worker-input').value,
-            row.querySelector('.client-input').value,
-            row.querySelector('.site-input').value,
+            row.querySelector('.client-site-input').value,
             classification
         );
         Object.entries(hours).forEach(([day, value]) => {
@@ -653,6 +627,7 @@ class BlueFolder {
                 <td>$${total.toFixed(2)}</td>
             `;
             chargesBody.appendChild(row);
+            updateCounts();
         });
     }
     
@@ -700,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function() {
             input.addEventListener('input', () => {
                 updateRowTotals(defaultRow);
                 updatePaySheets();
-                const blueFolder = new BlueFolder();  // Add this line
+                const blueFolder = new BlueFolder();  
                 blueFolder.updateCharges();     
             });
         });
@@ -734,13 +709,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         ${getClassificationOptions()}
                     </select>
                 </td>
-                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="monday"></td>
-                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="tuesday"></td>
-                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="wednesday"></td>
-                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="thursday"></td>
-                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="friday"></td>
-                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="saturday"></td>
-                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="sunday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Monday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Tuesday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Wednesday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Thursday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Friday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Saturday"></td>
+                <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Sunday"></td>
                 <td class="total-hours">0.0</td>
             `;
 
@@ -749,7 +724,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 input.addEventListener('input', () => {
                     updateRowTotals(row);
                     updatePaySheets();
-                    const blueFolder = new BlueFolder();  // Add this line
+                    const blueFolder = new BlueFolder();  
                     blueFolder.updateCharges();  
                 });
             });
@@ -757,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add classification change listener to the new row
             row.querySelector('.classification-select').addEventListener('change', () => {
                 updatePaySheets();
-                const blueFolder = new BlueFolder();  // Add this line
+                const blueFolder = new BlueFolder();  
                 blueFolder.updateCharges();    
             });
 

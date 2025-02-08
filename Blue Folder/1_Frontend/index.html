@@ -9,12 +9,12 @@
 <body>
     <header>
         <h1>Blue Folder System</h1>
-        <nav>
+        <nav aria-label="Main navigation">
             <ul>
                 <li><a href="#timesheets">Timesheets</a></li>
                 <li><a href="#paysheets">Pay Sheets</a></li>
                 <li><a href="#charges">Client Charges</a></li>
-                <li><a href="#classifications">Classifications & Rates</a></li>
+                <li><a href="#classifications">Classifications &amp; Rates</a></li>
             </ul>
         </nav>
     </header>
@@ -23,8 +23,8 @@
 
         <!-- Timesheets Section -->
         <section id="timesheets">
-            <div id="timesheet-count" class="count-display">Timesheet Entries: 0</div>
             <h2>Time Sheets</h2>
+            <div id="timesheet-count" class="count-display">Timesheet Entries: 0</div>
             <table id="timesheet-table">
                 <thead>
                     <tr>
@@ -39,14 +39,14 @@
                         <th>Saturday</th>
                         <th>Sunday</th>
                         <th>Total Hours</th>
-                    <tr>    
+                    </tr>    
                 </thead>
                 <tbody id="timesheet-body">
                     <tr>
                         <td><input type="text" class="client-site-input"></td>
                         <td><input type="text" class="worker-input"></td>
                         <td>
-                            <select class="classification-select">
+                            <select class="classification-select"></select>
                         </td>
                         <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Monday"></td>
                         <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Tuesday"></td>
@@ -66,8 +66,8 @@
 
         <!-- Pay Sheets Section -->
         <section id="paysheets">
-            <div id="paysheet-count" class="count-display">Pay Sheet Entries: 0</div>
             <h2>Pay Sheets</h2>
+            <div id="paysheet-count" class="count-display">Pay Sheet Entries: 0</div>
             <table id="paysheet-table">
                 <thead>
                     <tr>
@@ -96,8 +96,8 @@
 
         <!-- Client Charges Section -->
         <section id="charges">
-            <div id="charges-count" class="count-display">Client Charge Entries: 0</div>
             <h2>Client Charges</h2>
+            <div id="charges-count" class="count-display">Client Charge Entries: 0</div>
             <table id="charges-table">
                 <thead>
                     <tr>
