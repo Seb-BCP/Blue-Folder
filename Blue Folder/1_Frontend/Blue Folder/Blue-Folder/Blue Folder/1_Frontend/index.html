@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Folder - Labour Hire Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>The Blue Folder</h1>
+        <nav aria-label="Main navigation">
+            <ul>
+                <li><a href="#timesheets">Timesheets</a></li>
+                <li><a href="#paysheets">Pay Sheets</a></li>
+                <li><a href="#charges">Client Charges</a></li>
+                <li><a href="#classifications">Classifications &amp; Rates</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- Timesheets Section -->
+        <section id="timesheets">
+            <h2>Time Sheets</h2>
+            <div id="timesheet-count" class="count-display">Timesheet Entries: 0</div>
+            <table id="timesheet-table">
+                <thead>
+                    <tr>
+                        <th>Client/Site</th>
+                        <th>Worker</th>
+                        <th>Classification</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Saturday</th>
+                        <th>Sunday</th>
+                        <th>Total Hours</th>
+                    </tr>    
+                </thead>
+                <tbody id="timesheet-body">
+                    <tr>
+                        <td><input type="text" class="client-site-input"></td>
+                        <td><input type="text" class="worker-input"></td>
+                        <td>
+                            <select class="classification-select"></select>
+                        </td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Monday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Tuesday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Wednesday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Thursday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Friday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Saturday"></td>
+                        <td><input type="number" class="hours-input" step="0.1" min="0" data-day="Sunday"></td>
+                        <td class="total-hours">0.0</td>
+                    </tr>
+                </tbody>    
+            </table>
+            <div class="controls">
+                <button id="add-row">Add Row</button>
+            </div>
+        </section>
+
+        <!-- Pay Sheets Section -->
+        <section id="paysheets">
+            <h2>Pay Sheets</h2>
+            <div id="paysheet-count" class="count-display">Pay Sheet Entries: 0</div>
+            <table id="paysheet-table">
+                <thead>
+                    <tr>
+                        <th>Worker</th>
+                        <th>Classification</th>
+                        <th>Normal Hours</th>
+                        <th>Normal Rate</th>
+                        <th>Normal Pay</th>
+                        <th>T&H Hours</th>
+                        <th>T&H Rate</th>
+                        <th>T&H Pay</th>
+                        <th>Double Hours</th>
+                        <th>Double Rate</th>
+                        <th>Double Pay</th>
+                        <th>Travel Rate</th>
+                        <th>Travel Days</th>
+                        <th>Travel Total</th>
+                        <th>Total Pay</th>
+                    </tr>
+                </thead>
+                <tbody id="paysheet-body">
+                    <!-- Pay sheet rows will be added by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Client Charges Section -->
+        <section id="charges">
+            <h2>Client Charges</h2>
+            <div id="charges-count" class="count-display">Client Charge Entries: 0</div>
+            <table id="charges-table">
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Worker</th>
+                        <th>Classification</th>
+                        <th>Normal Hours</th>
+                        <th>Normal Rate</th>
+                        <th>Normal Charge</th>
+                        <th>T&H Hours</th>
+                        <th>T&H Rate</th>
+                        <th>T&H Charge</th>
+                        <th>Double Hours</th>
+                        <th>Double Rate</th>
+                        <th>Double Charge</th>
+                        <th>Travel Rate</th>
+                        <th>Travel Days</th>
+                        <th>Travel Total</th>
+                        <th>Total Charge</th>
+                    </tr>
+                </thead>
+                <tbody id="charges-body">
+                    <!-- Charge rows will be added by JavaScript -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports">
+            <h2>Reports</h2>
+            <div id="reports-content" class="report-display">
+                <!-- The report data will be inserted here -->
+            </div>
+        </section>
+    
+        <!-- Classifications & Rates Section -->
+        <section id="classifications">
+            <h2>Classifications & Rates</h2>
+            <table id="classifications-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Classification</th>
+                        <th rowspan="2">Industry</th> <!-- New Industry column -->
+                        <th rowspan="2">Rate Type</th>
+                        <th colspan="5">Rates</th>
+                    </tr>
+                    <tr>
+                        <th>Normal Time</th>
+                        <th>T&H</th>
+                        <th>Double Time</th>
+                        <th>Shift</th>
+                        <th>Travel</th>
+                    </tr>
+                </thead>
+                <tbody id="classifications-body">
+                    <!-- First Classification Row Pair -->
+                    <tr>
+                        <td rowspan="2">
+                            <input type="text" class="classification-input" value="Construction TA">
+                        </td>
+                        <td rowspan="2">
+                            <select class="industry-select">
+                                <option value="Construction" selected>Construction</option>
+                                <option value="Non Construction">Non Construction</option>
+                            </select>
+                        </td>
+                        <td>Pay Rate</td>
+                        <td><input type="number" step="0.01" class="rate-input" value="35.04"></td>
+                        <td><input type="number" step="0.01" class="rate-input" value="49.05"></td>
+                        <td><input type="number" step="0.01" class="rate-input" value="63.07"></td>
+                        <td><input type="number" step="0.01" class="rate-input" value="49.05"></td>
+                        <td><input type="number" step="0.01" class="rate-input" value="21.94"></td>
+                    </tr>
+                    <tr>
+                        <td>Charge Rate</td>
+                        <td><input type="number" step="0.01" class="rate-input" value="52.15"></td>
+                        <td><input type="number" step="0.01" class="rate-input" value="63.65"></td>
+                        <td><input type="number" step="0.01" class="rate-input" value="79.45"></td>
+                        <td><input type="number" step="0.01" class="rate-input" value="69.65"></td>
+                        <td><input type="number" step="0.01" class="rate-input" value="26.55"></td>
+                    </tr>
+                    <!-- Second Classification Row Pair -->
+                    <tr>
+                        <td rowspan="2">
+                            <input type="text" class="classification-input" value="CLAB">
+                        </td>
+                        <td rowspan="2">
+                            <select class="industry-select">
+                                <option value="Construction" selected>Construction</option>
+                                <option value="Non Construction">Non Construction</option>
+                            </select>
+                        </td>
+                        <td>Pay Rate</td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                    </tr>
+                    <tr>
+                        <td>Charge Rate</td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                    </tr>
+                    <!-- Third Classification Row Pair -->
+                    <tr>
+                        <td rowspan="2">
+                            <input type="text" class="classification-input" value="LF">
+                        </td>
+                        <td rowspan="2">
+                            <select class="industry-select">
+                                <option value="Non Construction" selected>Non Construction</option>
+                                <option value="Construction">Construction</option>
+                            </select>
+                        </td>
+                        <td>Pay Rate</td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                    </tr>
+                    <tr>
+                        <td>Charge Rate</td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                        <td><input type="number" step="0.01" class="rate-input"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="controls">
+                <button id="add-classification">Add Classification</button>
+            </div>
+        </section>
+    
+    </main>
+
+    <footer>
+        <p>Blue Collar People - Labour Hire Management System</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

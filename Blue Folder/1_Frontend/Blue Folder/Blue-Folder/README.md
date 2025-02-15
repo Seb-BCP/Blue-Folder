@@ -1,0 +1,2 @@
+After attempt for grouping, a pre-group version was found with the targets:
+  Work around the problem by creating a "Invoicing Reports" to create the section as reports was created rather than the complex modification of tables.
